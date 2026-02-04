@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Smart Form</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family:  'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+        body {
+            background-color: #f8fafc;
+            color:  #334155;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .form-container {
+            width: 100%;
+            max-width: 460px;
+            background-color: white;
+            border-radius: 18px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+        .form-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to right, #3b82f6, #8b5cf6);
+        }
+        h1 {
+            text-align: center;
+            font-weight: 700;
+            font-size: 28px;
+            margin-bottom: 8px;
+            color: #1e293b;
+            letter-spacing: -0.5px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 32px;
+            font-size: 15px;
+            font-weight: 400;
+        }
+        #task-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .input-group {
+            position: relative;
+        }
+        input {
+            width: 100%;
+            padding: 16px 20px 16px 48px;
+            border: 1.5px solid  #e2e8f0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.25s ease;
+            background-color: #f8fafc;
+            color: #334155;
+            outline: none;
+        }
+        .input:focus {
+            border-color: #3b82f6;
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        input::placeholder {
+            color: #94a3b8;
+        }
+        input-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 18px;
+            transition: color 0.25 ease;
+        }
+        input:focus + .input-icon {
+            color: #3b82f6;
+        }
+        button {
+            background: linear-gradient(to right, #3b82f6, #8b5cf6);
+            color: white;
+            border: none;
+            padding: 18px;
+            border-radius: 10px;
+            font-size: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.3);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        .password-strength {
+            height: 4px;
+            background-color: #e2e8f0;
+            border-radius: 2px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+        .strength-meter {
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease, background-color 0.3s ease;
+        }
+        .form-footer {
+            text-align: center;
+            margin-top: 24px;
+            color:  #64748b;
+            font-size: 14px;
+        }
+        .form-footer a {
+            color: #3b82f6;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .form-footer a:hover {
+            text-decoration: underline;
+        }
+        .error-message {
+            color: #ef4444;
+            font-size: 14px;
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            opacity: 0;
+            transform: translateY(-5px);
+            transition: opacity 0.3s ease, transform 0.3 ease;
+        }
+        .error-message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .success-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #10b981;
+            color: white;
+            padding: 16px 24px;
+            border-radius: 10px;
+            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 1000;
+            transform: translateX(150%);
+            transition: transform 0.4s ease;
+        }
+        .success-message.show {
+            transform: translateX(0);
+        }
+        @media (max-width: 500px) {
+            .form-container {
+                padding: 32px 24px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+            input {
+                padding: 14px 18px 14px 44px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1>Create Account</h1>
+        <p class="subtitle">Join our community with a simple registration </p>
+
+        <form id="task-form">
+            <div class="input-group">
+                <i class="fas fa-user input-icon"></i>
+                <input type="text" id="name" placeholder="Full Name">
+                <div class="error-message" id="name-error">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>Name is required</span>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <i class="fas fa-birthday-cake input-icon"></i>
+                <input type="number" id="age" placeholder="Age">
+                <div class="error-message" id="age-error">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>Age is required</span>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <i class="fas fa-lock input-icon"></i>
+                <input type="password" id="password" placeholder="Password (min 8 characters)">
+                <div class="password-strength">
+                    <div class="strength-meter" id="password-strength-meter"></div>
+                </div>
+                <div class="error-message" id="password-error">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>Password must be at least 8 characters</span>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <i class="fas fa-lock input-icon"></i>
+                <input type="password" id="confirm_password" placeholder="Confirm Password">
+                <div class="error-message" id="confirm-password-error">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>Passwords do not match</span>
+                </div>
+            </div>
+
+             <button type="submit">Register Now</button>
+        </form>
+
+        <div class="form-footer">
+            Already have an account? <a href="#">Sign In</a>
+        </div>
+    </div>
+
+    <div class="success-message" id="success-message">
+        <i class="fas fa-check-circle"></i>
+        <span>Registration Successful!</span>
+    </div>
+
+    <script>
+        // WAIT FOR PAGE TO LOAD
+        document.addEventListener('DOMContentLoaded', function() {
+            // SELECT HTML ELEMENTS
+            const taskForm = document.getElementById('task-form')
+            const nameInput = document.getElementById('name')
+            const ageInput = document.getElementById('age')
+            const passwordInput = document.getElementById('password')
+            const confirmPasswordInput = document.getElementById('confirm_password')
+            const nameError = document.getElementById('name-error');
+            const ageError = document.getElementById('age-error');
+            const passwordError = document.getElementById('password-error');
+            const confirmPasswordError = document.getElementById('confirm-password-error');
+            const successMessage = document.getElementById('success-message');
+            const passwordStrengthMeter = document.getElementById('password-strength-meter');
+
+            // Helper Function
+            function showError(el) {
+                el.classList.add('show');
+            }
+            function hideError(el) {
+                el.classList.remove('show');
+            }
+
+            // Real-time password strength indicator
+            passwordInput.addEventListener('input', function() {
+                const password = passwordInput.value;
+                let strength = 0;
+
+                if (password.length >= 8) strength += 30;
+                if (/[A-Z]/.test(password)) strength += 20;
+                if (/[0-9]/.test(password)) strength += 20;
+                if (/[^A-Za-z0-9]/.test(password)) strength +=30;
+
+                passwordStrengthMeter.style.width = strength + '%';
+
+                // Color coding based on strength
+                if (strength < 40) {
+                    passwordStrengthMeter.style.backgroundColor = '#ef4444';
+                } else if (strength < 70) {
+                    passwordStrengthMeter.style.backgroundColor = '#f59e0b';
+                } else {
+                    passwordStrengthMeter.style.backgroundColor = '#10b981';
+                }
+
+                // Hide error if password is valid
+                if (password.length >= 8) {
+                    hideError(passwordError);
+                }
+            });
+
+            // FORM SUBMISSION
+            taskForm.addEventListener('submit', function(e) {
+                e.preventDefault()
+
+                const name = nameInput.value.trim()
+                const age = ageInput.value.trim()
+                const password = passwordInput.value
+                const confirmPassword = confirmPasswordInput.value
+
+                let isValid = true;
+
+                // NAME VALIDATION
+                if (name === '') {
+                    showError(nameError);
+                    isValid = false;
+                } else hideError(nameError);
+
+                // AGE VALIDATION
+                if (age === '') {
+                    showError(ageError);
+                    isValid = false;
+                } else hideError(ageError);
+
+                // PASSWORD VALIDATION
+                if (password.length < 8) {
+                    showError(password.error);
+                    isValid = false;
+                } else hideError(passwordError);
+
+                // CONFIRM PASSWORD
+                if (password !== confirmPassword) {
+                    showError(confirmPasswordError);
+                    isValid = false;
+                } else hideError(confirmPasswordError);
+
+                 if (!isValid) return;
+
+                 // SUCCESS
+                 successMessage.classList.add('show');
+
+                 setTimeout(() => {
+                    successMessage.classList.remove('show');
+                 }, 3000);
+
+                taskForm.reset()
+                passwordStrengthMeter.style.width = '0%';
+            });
+        });
+    </script>
+</body>
+</html>
